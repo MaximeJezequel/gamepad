@@ -17,23 +17,13 @@ export default defineConfig({
         display: "standalone",
         scope: "/",
         start_url: "/",
-        short_name: "React PWA",
-        description: "Vite React PWA",
-        name: "Vite React PWA",
+        short_name: "Gamepad",
+        description: "Gamepad",
+        name: "Gamepad",
         icons: [
           {
             src: "/icon-192x192.png",
             sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/icon-256x256.png",
-            sizes: "256x256",
-            type: "image/png",
-          },
-          {
-            src: "/icon-384x384.png",
-            sizes: "384x384",
             type: "image/png",
           },
           {
