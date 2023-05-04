@@ -3,6 +3,15 @@ import React, { useCallback, useEffect, useState } from "react"
 const GamepadComponent: React.FC = () => {
   const [gamepad, setGamepad] = useState<Gamepad | null>(null)
   const [buttonPressed, setButtonPressed] = useState<number | null>(null)
+  const [count, setCount] = useState<number>(0)
+
+  const handleResetClick = () => {
+    setCount(0)
+  }
+
+  ////////////////////////////////
+  ///CONNEXION
+  ////////////////////////////////
 
   // Gamepad is connecting
   const handleGamepadConnected = (event: GamepadEvent) => {
@@ -28,7 +37,6 @@ const GamepadComponent: React.FC = () => {
         optionalServices: ["battery_service"],
         filters: [{ services: ["battery_service"] }],
       })
-
       // Connect to the device
       const gatt = await device.gatt?.connect()
       // Get the Gamepad service
@@ -62,25 +70,13 @@ const GamepadComponent: React.FC = () => {
     []
   )
 
-  useEffect(() => {
-    window.addEventListener("gamepadconnected", handleGamepadConnected)
-    window.addEventListener("gamepaddisconnected", handleGamepadDisconnected)
-    requestAnimationFrame(updateGamepad)
-
-    return () => {
-      window.removeEventListener("gamepadconnected", handleGamepadConnected)
-      window.removeEventListener(
-        "gamepaddisconnected",
-        handleGamepadDisconnected
-      )
-    }
-  }, [])
-
   const updateGamepad = () => {
     if (gamepad) {
       setGamepad((prevGamepad) => {
         const updatedGamepad =
-          navigator.getGamepads()[prevGamepad?.index ?? gamepad?.index ?? 0]
+          navigator.getGamepads()[
+            prevGamepad?.index ?? gamepad?.index ?? 0 ?? 1
+          ]
         if (updatedGamepad) {
           updatedGamepad.buttons.forEach((button, index) => {
             if (button.pressed !== prevGamepad?.buttons[index].pressed) {
@@ -99,8 +95,31 @@ const GamepadComponent: React.FC = () => {
     requestAnimationFrame(updateGamepad)
   }
 
+  useEffect(() => {
+    window.addEventListener("gamepadconnected", handleGamepadConnected)
+    window.addEventListener("gamepaddisconnected", handleGamepadDisconnected)
+    requestAnimationFrame(updateGamepad)
+
+    return () => {
+      window.removeEventListener("gamepadconnected", handleGamepadConnected)
+      window.removeEventListener(
+        "gamepaddisconnected",
+        handleGamepadDisconnected
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    if (buttonPressed == 9) {
+      setCount(0)
+    } else if (buttonPressed !== null) {
+      setCount(count + buttonPressed)
+    }
+  }, [buttonPressed])
+
   return (
-    <div>
+    <div className="gamepad-container">
+      <h3>Bluetooth Connexion</h3>
       {gamepad ? (
         <>
           <p>Gamepad connected: {gamepad.id}</p>
@@ -109,10 +128,13 @@ const GamepadComponent: React.FC = () => {
       ) : (
         <button onClick={() => connectGamepad()}>Connect to gamepad</button>
       )}
+      <h3>Inputs</h3>
       <p>
         Button pressed:{" "}
         {buttonPressed !== null ? `Button ${buttonPressed} pressed` : "None"}
       </p>
+      <p>Count: {count}</p>
+      <button onClick={() => handleResetClick()}>Reset</button>
     </div>
   )
 }

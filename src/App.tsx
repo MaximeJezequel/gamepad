@@ -4,7 +4,7 @@ import Gamepad from "./components/GamepadComponent"
 const App: React.FC = () => {
   return (
     <div>
-      <span>Bluetooth Device check</span>
+      <h2>Bluetooth Device check</h2>
       <Gamepad />
     </div>
   )
